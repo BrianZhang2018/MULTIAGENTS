@@ -1,3 +1,4 @@
 langchain-google-genai==2.0.10
 google-generativeai==0.8.5
 pydantic==2.11.9
+langgraph==0.6.7

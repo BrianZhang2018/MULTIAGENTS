@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import json
 import os
 from typing import Dict, Any
@@ -8,7 +10,7 @@ def handler(event, context):
     """Netlify function to process mortgage servicing inquiries"""
     
     # Handle CORS preflight
-    if event['httpMethod'] == 'OPTIONS':
+    if event.get('httpMethod') == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
@@ -16,6 +18,18 @@ def handler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS'
             }
+        }
+    
+    # Return test response if no body (for debugging)
+    if not event.get('body'):
+        return {
+            'statusCode': 200,
+            'headers': {'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({
+                'message': 'ATLAS function is working',
+                'method': event.get('httpMethod', 'unknown'),
+                'environment': 'netlify'
+            })
         }
     
     try:
@@ -93,7 +107,12 @@ def handler(event, context):
         return {
             'statusCode': 500,
             'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': str(e)})
+            'body': json.dumps({
+                'error': str(e),
+                'type': type(e).__name__,
+                'function': 'process_inquiry',
+                'debug': True
+            })
         }
 
 def process_with_agent(llm, agent_name: str, customer_id: str, loan_number: str, inquiry_message: str) -> str:

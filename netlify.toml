@@ -1,14 +1,10 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
+  command = ""
 
-[functions]
-  python_version = "3.8"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[context.production.environment]
-  GOOGLE_API_KEY = ""

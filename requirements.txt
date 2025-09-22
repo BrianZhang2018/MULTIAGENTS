@@ -1,4 +1,4 @@
-langgraph
+langgraph==0.6.7
 langchain
 langchain-google-genai
 langchain-community

@@ -78,16 +78,16 @@
                     <h3 class="text-lg font-medium text-gray-700 mb-3">Sample Inquiries</h3>
                     <div class="space-y-2">
                         <button onclick="fillSample(1)" class="w-full text-left p-2 bg-gray-100 hover:bg-gray-200 rounded text-sm">
-                            💰 Payment inquiry: "When is my next payment due?"
+                            💰 Payment inquiry: "What's my payment due date this month?"
                         </button>
                         <button onclick="fillSample(2)" class="w-full text-left p-2 bg-gray-100 hover:bg-gray-200 rounded text-sm">
-                            📄 Document request: "I need to submit income documents"
+                            📄 Document request: "I need to send my W2 and bank statements for my loan mod"
                         </button>
                         <button onclick="fillSample(3)" class="w-full text-left p-2 bg-gray-100 hover:bg-gray-200 rounded text-sm">
-                            ⚠️ Hardship: "Having trouble making payments"
+                            ⚠️ Foreclosure concern: "I got a scary letter about foreclosure. What do I do?"
                         </button>
                         <button onclick="fillSample(4)" class="w-full text-left p-2 bg-gray-100 hover:bg-gray-200 rounded text-sm">
-                            🏠 Refinancing: "Interested in refinancing"
+                            🏠 Refinancing question: "Rates dropped. Should I refi my ARM before it adjusts?"
                         </button>
                     </div>
                 </div>
@@ -166,27 +166,27 @@
     </div>
 
     <script>
-        // Sample data
+        // Sample data from INTERVIEW_DEMO.md
         const samples = {
             1: {
                 customer_id: "CUST001",
                 loan_number: "LOAN12345", 
-                inquiry_message: "I want to know when my next payment is due and check my current balance."
+                inquiry_message: "What's my payment due date this month?"
             },
             2: {
                 customer_id: "CUST002",
                 loan_number: "LOAN67890",
-                inquiry_message: "I need to submit updated income documents for a loan modification request."
+                inquiry_message: "I need to send my W2 and bank statements for my loan mod"
             },
             3: {
                 customer_id: "CUST003", 
                 loan_number: "LOAN11111",
-                inquiry_message: "I'm having trouble making my monthly payments and worried about foreclosure."
+                inquiry_message: "I got a scary letter about foreclosure. What do I do?"
             },
             4: {
                 customer_id: "CUST004",
                 loan_number: "LOAN22222", 
-                inquiry_message: "I'm interested in refinancing my mortgage due to lower interest rates."
+                inquiry_message: "Rates dropped. Should I refi my ARM before it adjusts?"
             }
         };
 
@@ -198,12 +198,52 @@
         }
 
         async function testFunction() {
+            // Use Example 1 from INTERVIEW_DEMO.md - Payment Inquiry
+            const testData = {
+                customer_id: "CUST001",
+                loan_number: "LOAN12345", 
+                inquiry_message: "What's my payment due date this month?"
+            };
+            
+            // Fill the form with test data
+            document.getElementById('customer_id').value = testData.customer_id;
+            document.getElementById('loan_number').value = testData.loan_number;
+            document.getElementById('inquiry_message').value = testData.inquiry_message;
+            
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            
             try {
-                const response = await fetch('/.netlify/functions/hello');
+                const response = await fetch('/.netlify/functions/process_inquiry', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
                 const result = await response.json();
-                alert('Function test: ' + result.message + ' (Status: ' + result.status + ')');
+                
+                if (response.ok) {
+                    // Show results
+                    document.getElementById('routedTo').textContent = `Routed to: ${result.routed_to.replace('_', ' ').toUpperCase()}`;
+                    document.getElementById('agentResponse').textContent = result.response;
+                    document.getElementById('results').classList.remove('hidden');
+                    
+                    alert(`✅ Test Function Success!\n\nRouted to: ${result.routed_to}\nExpected: customer_service\n\nThe AI correctly identified this as a payment inquiry!`);
+                } else {
+                    throw new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
             } catch (error) {
-                alert('Function test failed: ' + error.message);
+                console.error('Test Function Error:', error);
+                document.getElementById('errorMessage').textContent = `Test Error: ${error.message}`;
+                document.getElementById('error').classList.remove('hidden');
+                alert(`❌ Test Function Failed: ${error.message}`);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
             }
         }
 

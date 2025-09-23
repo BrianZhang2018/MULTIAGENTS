@@ -4,7 +4,19 @@
       "Bash(mkdir:*)",
       "Bash(python:*)",
       "Bash(source:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "WebSearch",
+      "Task",
+      "Bash",
+      "Bash(git log:*)",
+      "Glob",
+      "Grep",
+      "LS",
+      "Read",
+      "Edit",
+      "MultiEdit",
+      "Write",
+      "WebFetch"
     ],
     "deny": [],
     "ask": []
